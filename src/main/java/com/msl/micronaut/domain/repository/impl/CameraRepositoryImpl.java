@@ -18,7 +18,9 @@ import com.msl.micronaut.domain.repository.CameraRepository;
 
 import io.micronaut.configuration.hibernate.jpa.scope.CurrentSession;
 import io.micronaut.spring.tx.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CameraRepositoryImpl implements CameraRepository {
 
 	@PersistenceContext
@@ -86,23 +88,41 @@ public class CameraRepositoryImpl implements CameraRepository {
                 .executeUpdate();
     }
 
+    @Override
+    @Transactional(readOnly = true)
 	public Optional<Camera> findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId,
 			String zone) {
+		log.info("Finding cameras findByCountryCodeAndInstallationIdAndZone::countryCode: {}, installationId: {}, zone: {}", countryCode, installationId, zone);
+
         String qlString = "SELECT c FROM Camera as c where countryCode = :countryCode and installationId = :installationId and zone = :zone";
-        TypedQuery<Camera> query = entityManager.createQuery(qlString, Camera.class);
+        TypedQuery<Camera> query = entityManager.createQuery(qlString, Camera.class)
+                .setParameter("countryCode", countryCode)
+                .setParameter("installationId", installationId)
+                .setParameter("zone", zone);
         return query.getResultStream().findFirst();
 	}
 
+    @Override
+    @Transactional(readOnly = true)
 	public List<Camera> findByCountryCodeAndInstallationId(String countryCode, String installationId) {
+		log.info("Finding cameras findByCountryCodeAndInstallationId::countryCode: {}, installationId: {}: {}", countryCode, installationId);
+
         String qlString = "SELECT c FROM Camera as c where countryCode = :countryCode and installationId = :installationId";
-        TypedQuery<Camera> query = entityManager.createQuery(qlString, Camera.class);
+        TypedQuery<Camera> query = entityManager.createQuery(qlString, Camera.class)
+                .setParameter("countryCode", countryCode)
+                .setParameter("installationId", installationId);
         return query.getResultList();
 	}
 
+    @Override
+    @Transactional(readOnly = true)
 	public List<Camera> findByCountryCodeAndInstallationIdAndZoneStartingWith(String countryCode, String installationId,
 			String zoneStarting) {
         String qlString = "SELECT c FROM Camera as c where countryCode = :countryCode and installationId = :installationId and zone like :zoneStarting%";
-        TypedQuery<Camera> query = entityManager.createQuery(qlString, Camera.class);
+        TypedQuery<Camera> query = entityManager.createQuery(qlString, Camera.class)
+                .setParameter("countryCode", countryCode)
+                .setParameter("installationId", installationId)
+                .setParameter("zoneStarting", zoneStarting);
         return query.getResultList();
 	}
 

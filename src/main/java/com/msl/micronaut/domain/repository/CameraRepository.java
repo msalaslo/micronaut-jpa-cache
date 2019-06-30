@@ -30,11 +30,10 @@ public interface CameraRepository {
 	int update(@NotNull String serial, String id, String countryCode, String installationId, String zone,
 			String password, String alias, Date creationTime, Date lasUpdateTime, String vossServices);
 
-	public Optional<Camera> findByCountryCodeAndInstallationIdAndZone(String countrCode, String installationId,
-			String zone);
+	Optional<Camera> findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId, String zone);
 
-	public List<Camera> findByCountryCodeAndInstallationId(String countrCode, String installationId);
+	List<Camera> findByCountryCodeAndInstallationId(String countryCode, String installationId);
 
-	public List<Camera> findByCountryCodeAndInstallationIdAndZoneStartingWith(String country, String installation,
+	List<Camera> findByCountryCodeAndInstallationIdAndZoneStartingWith(String countryCode, String installationId,
 			String zoneStarting);
 }
