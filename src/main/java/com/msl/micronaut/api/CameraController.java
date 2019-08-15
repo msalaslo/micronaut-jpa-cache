@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Validated 
 @Slf4j
-@Controller("/cameras")
+@Controller("/correlation/v1.0/cameras")
 public class CameraController {
     protected final CameraRepository cameraRepository;
 
