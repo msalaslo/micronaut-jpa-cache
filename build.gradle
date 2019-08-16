@@ -19,6 +19,7 @@ apply plugin:"application"
 apply plugin:"java"
 apply plugin:"net.ltgt.apt-eclipse"
 apply plugin:"net.ltgt.apt-idea"
+apply plugin: 'maven'
 
 
 repositories {
@@ -96,3 +97,19 @@ run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
 mainClassName = "com.msl.micronaut.Application"
 compileJava.options.compilerArgs += '-parameters'
 compileTestJava.options.compilerArgs += '-parameters'
+
+
+task writeNewPom doLast {
+    pom {
+        project {
+            inceptionYear '2019'
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+        }
+    }.writeTo("pom.xml")
+}

@@ -3,8 +3,8 @@ package com.msl.micronaut.domain.service.impl;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.msl.micronaut.api.converter.CameraConverter;
 import com.msl.micronaut.api.dto.CameraDTO;
@@ -23,13 +23,13 @@ import io.micronaut.data.model.Pageable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Singleton
 public class CameraServiceImpl implements CameraService {
 
-	@Autowired
+	@Inject
 	CameraRepositoryData repository;
 
-	@Autowired
+	@Inject
 	CameraConverter cameraConverter;
 	
 	//@Cacheable(value = "cameras/all", cacheManager = "cacheManager", unless = "#result == null")
@@ -48,20 +48,22 @@ public class CameraServiceImpl implements CameraService {
 	}
 	
 //	@Cacheable(value = "cameras/allKeys", cacheManager = "cacheManager", unless = "#result == null")
-//	@Cacheable(value = "cameras/allKeys")
-//	public List<String> findAllKeys(int page, int pageSize) {
-//		log.info("findAllKeys");
-//		Pageable pageable = Pageable.from(page, pageSize);
-//		List<String> cameraKeysPage = repository.findAllKeysWithPagination(pageable);
-//		return cameraKeysPage;
-//	}
+	@Cacheable(value = "cameras/allKeys")
+	public List<String> findAllKeys(int page, int pageSize) {
+		log.info("findAllKeys");
+		Pageable pageable = Pageable.from(page, pageSize);
+		List<String> cameraKeysPage = repository.findAllKeysWithPagination(pageable);
+		return cameraKeysPage;
+	}
 
 //	@Cacheable(value = "cameras/ByCountryAndInstallationAndZone", key = "#country + #installation + #zone", cacheManager = "cacheManager", unless = "#result == null")
 	@Cacheable(value = "cameras/ByCountryAndInstallationAndZone")
 	public Optional<CameraDTO> findByCountryAndInstallationAndZone(String country, String installation, String zone) {
 		log.debug("findBy country {}, installation {}, zone{}:", country, installation, zone);
-		Optional<Camera> camera = repository.findByCountryCodeAndInstallationIdAndZone(country, installation, zone);
-		return cameraConverter.toOptionalCameraDto(camera);
+//		Optional<Camera> camera = repository.findByCountryCodeAndInstallationIdAndZone(country, installation, zone);
+		Camera camera = repository.findByCountryCodeAndInstallationIdAndZone(country, installation, zone);
+		Optional<Camera> optionalCamera = Optional.of(camera);		
+		return cameraConverter.toOptionalCameraDto(optionalCamera);
 	}
 
 //	@Cacheable(value = "cameras/ByCountryAndInstallation", key = "#country + #installation", cacheManager = "cacheManager", unless = "#result == null or #result.size()==0")

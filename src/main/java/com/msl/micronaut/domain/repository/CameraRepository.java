@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.inject.Singleton;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -16,6 +17,7 @@ import com.msl.micronaut.domain.entity.Camera;
  * @since 1.0.0
  * @author Miguel Salas
  */
+@Singleton
 public interface CameraRepository {
 	Optional<Camera> findById(@NotNull String serial);
 

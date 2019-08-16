@@ -1,5 +1,6 @@
 package com.msl.micronaut.domain.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.msl.micronaut.api.dto.CameraDTO;
@@ -16,7 +17,7 @@ public interface CameraService {
 	public void evictAllCacheValues();
 	public PageDTO<CameraDTO> findAll(int page, int pageSize);
 	public PageDTO<CameraDTO> findAllNoCache(int page, int pageSize);
-//	public List<String> findAllKeys(int page, int pageSize);
+	public List<String> findAllKeys(int page, int pageSize);
 	public PageDTO<CameraDTO> findAllVoss(int page, int pageSize);
 	public Iterable<CameraDTO> findVossDevicesByCountryAndInstallation(String country, String installation);
 	public long count();
