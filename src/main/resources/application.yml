@@ -1,6 +1,6 @@
 micronaut:
   application:
-    name: multicache
+    name: micronaut-jpa-cache
   server:
         port: 8084
   router:
