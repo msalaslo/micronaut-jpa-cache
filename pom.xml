@@ -9,6 +9,7 @@
 	<version>0.1</version>
 	<properties>
 		<micronaut.version>1.2.0</micronaut.version>
+		<micronaut.data.version>1.0.0.M1</micronaut.data.version>
 		<jdk.version>1.8</jdk.version>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
@@ -17,7 +18,14 @@
 		<exec.mainClass>example.Application</exec.mainClass>
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
+		<exec.mainClass>com.msl.micronaut.Application</exec.mainClass>
 	</properties>
+	<repositories>
+		<repository>
+			<id>jcenter.bintray.com</id>
+			<url>https://jcenter.bintray.com</url>
+		</repository>
+	</repositories>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -41,7 +49,7 @@
 		<dependency>
 			<groupId>io.micronaut</groupId>
 			<artifactId>micronaut-inject-java</artifactId>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>io.micronaut</groupId>
@@ -64,20 +72,23 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.micronaut.configuration</groupId>
-			<artifactId>micronaut-hibernate-validator</artifactId>
+			<groupId>io.micronaut</groupId>
+			<artifactId>micronaut-validation</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>io.micronaut.configuration</groupId>
-			<artifactId>micronaut-hibernate-jpa</artifactId>
+			<groupId>io.micronaut.data</groupId>
+			<artifactId>micronaut-data-hibernate-jpa</artifactId>
+			<version>${micronaut.data.version}</version>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>io.micronaut.configuration</groupId>
 			<artifactId>micronaut-jdbc-hikari</artifactId>
 			<scope>compile</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -87,12 +98,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.micronaut.data</groupId>
-			<artifactId>micronaut-data-hibernate-jpa</artifactId>
-			<version>1.0.0.M1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -143,4 +148,139 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.0</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>${exec.mainClass}</mainClass>
+								</transformer>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>1.6.0</version>
+				<configuration>
+					<executable>java</executable>
+					<arguments>
+						<argument>-noverify</argument>
+						<argument>-XX:TieredStopAtLevel=1</argument>
+						<argument>-Dcom.sun.management.jmxremote</argument>
+						<argument>-classpath</argument>
+						<classpath />
+						<argument>${exec.mainClass}</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.hibernate.orm.tooling</groupId>
+				<artifactId>hibernate-enhance-maven-plugin</artifactId>
+				<version>5.4.2.Final</version>
+				<executions>
+					<execution>
+						<configuration>
+							<failOnError>true</failOnError>
+							<enableLazyInitialization>true</enableLazyInitialization>
+							<enableDirtyTracking>true</enableDirtyTracking>
+							<enableAssociationManagement>true</enableAssociationManagement>
+							<enableExtendedEnhancement>false</enableExtendedEnhancement>
+						</configuration>
+						<goals>
+							<goal>enhance</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.7.0</version>
+					<configuration>
+						<source>${jdk.version}</source>
+						<target>${jdk.version}</target>
+						<encoding>UTF-8</encoding>
+						<compilerArgs>
+							<arg>-parameters</arg>
+						</compilerArgs>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>io.micronaut</groupId>
+								<artifactId>micronaut-inject-java</artifactId>
+								<version>${micronaut.version}</version>
+							</path>
+							<path>
+								<groupId>io.micronaut.data</groupId>
+								<artifactId>micronaut-data-processor</artifactId>
+								<version>${micronaut.data.version}</version>
+							</path>
+							<path>
+								<groupId>io.micronaut</groupId>
+								<artifactId>micronaut-validation</artifactId>
+								<version>${micronaut.version}</version>
+							</path>
+							<path>
+								<groupId>io.micronaut</groupId>
+								<artifactId>micronaut-graal</artifactId>
+								<version>${micronaut.version}</version>
+							</path>
+						</annotationProcessorPaths>
+					</configuration>
+					<executions>
+						<execution>
+							<id>test-compile</id>
+							<goals>
+								<goal>testCompile</goal>
+							</goals>
+							<configuration>
+								<compilerArgs>
+									<arg>-parameters</arg>
+								</compilerArgs>
+								<annotationProcessorPaths>
+									<path>
+										<groupId>io.micronaut</groupId>
+										<artifactId>micronaut-inject-java</artifactId>
+										<version>${micronaut.version}</version>
+									</path>
+									<path>
+										<groupId>io.micronaut.data</groupId>
+										<artifactId>micronaut-data-processor</artifactId>
+										<version>${micronaut.data.version}</version>
+									</path>
+									<path>
+										<groupId>io.micronaut</groupId>
+										<artifactId>micronaut-validation</artifactId>
+										<version>${micronaut.version}</version>
+									</path>
+								</annotationProcessorPaths>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

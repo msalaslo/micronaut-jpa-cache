@@ -1,5 +1,6 @@
 package com.msl.micronaut.domain.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,28 +32,35 @@ public class CameraServiceImpl implements CameraService {
 
 	@Inject
 	CameraConverter cameraConverter;
-	
+
+    @Inject
+    public CameraServiceImpl(CameraConverter cameraConverter) {
+    }
+
 	//@Cacheable(value = "cameras/all", cacheManager = "cacheManager", unless = "#result == null")
 	@Cacheable(value = "cameras/all")
 	public PageDTO<CameraDTO> findAll(int page, int pageSize) {
 		log.info("findAll");
 		return findAllNoCache(page, pageSize);
 	}
-	
+
 	public PageDTO<CameraDTO> findAllNoCache(int page, int pageSize) {
 		log.info("findAllNocache");
 		Pageable pageable = Pageable.from(page, pageSize);
-		Page<Camera> cameraPage = repository.findAll(pageable);
+        Page<Camera> cameraPage = repository.findAll(pageable);
 		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(null, cameraPage);
 		return camerasDtoPage;
 	}
-	
+
 //	@Cacheable(value = "cameras/allKeys", cacheManager = "cacheManager", unless = "#result == null")
 	@Cacheable(value = "cameras/allKeys")
 	public List<String> findAllKeys(int page, int pageSize) {
 		log.info("findAllKeys");
 		Pageable pageable = Pageable.from(page, pageSize);
-		List<String> cameraKeysPage = repository.findAllKeysWithPagination(pageable);
+		Page<Camera> cameraPage = repository.findAll(pageable);
+		//workarounf for micronaut
+		List<String> cameraKeysPage = new ArrayList<String>();
+		cameraPage.forEach(camera -> cameraKeysPage.add(camera.getSerial()));
 		return cameraKeysPage;
 	}
 
@@ -62,7 +70,7 @@ public class CameraServiceImpl implements CameraService {
 		log.debug("findBy country {}, installation {}, zone{}:", country, installation, zone);
 //		Optional<Camera> camera = repository.findByCountryCodeAndInstallationIdAndZone(country, installation, zone);
 		Camera camera = repository.findByCountryCodeAndInstallationIdAndZone(country, installation, zone);
-		Optional<Camera> optionalCamera = Optional.of(camera);		
+		Optional<Camera> optionalCamera = Optional.of(camera);
 		return cameraConverter.toOptionalCameraDto(optionalCamera);
 	}
 
@@ -117,7 +125,7 @@ public class CameraServiceImpl implements CameraService {
 		log.info("PUT::This method does not create the object in the database, only has been cached:" + cameras);
 		return cameras;
 	}
-	
+
 //		@CachePut(value = "voss/ByCountryAndInstallation", key = "#camera.countryCode + #camera.installationId", cacheManager = "cacheManager", condition = "#camera.vossServices != null") })
 		@CachePut(value = "voss/ByCountryAndInstallation")
 		public Iterable<CameraDTO> putVosses(Iterable<CameraDTO> cameras) {
@@ -155,13 +163,14 @@ public class CameraServiceImpl implements CameraService {
 	public CameraDTO updateInRepository(CameraDTO camera, String id) {
 		log.debug("update camera {} with id {}:", camera, id);
 		Camera cameraEntity = cameraConverter.toCameraEntity(camera);
-		return repository.findById(id).map(newCamera -> {
-			cameraEntity.setPassword(newCamera.getPassword());
+		Optional<Camera> newCamera = repository.findById(id);
+		if(newCamera.isPresent()){
+			cameraEntity.setPassword(newCamera.get().getPassword());
 			Camera newCameraEntity = repository.save(cameraEntity);
 			return cameraConverter.toCameraDto(newCameraEntity);
-		}).orElseGet(() -> {
+		}else{
 			return null;
-		});
+		}
 	}
 
 	@CacheInvalidate(value = "cameras/BySerial")
@@ -169,8 +178,8 @@ public class CameraServiceImpl implements CameraService {
 		log.debug("deleteById:" + id);
 		repository.deleteById(id);
 	}
-	
-	
+
+
 	@InvalidateOperations({
 //			@CacheInvalidate(value = "cameras/ByCountryAndInstallationAndZone", allEntries = true, cacheManager = "cacheManager"),
 //			@CacheInvalidate(value = "cameras/ByCountryAndInstallation", allEntries = true, cacheManager = "cacheManager"),

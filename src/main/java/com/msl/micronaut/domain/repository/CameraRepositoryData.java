@@ -1,7 +1,6 @@
 package com.msl.micronaut.domain.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Singleton;
 
@@ -15,7 +14,7 @@ import io.micronaut.data.repository.PageableRepository;
 
 /**
  * Camera DAO/Repository
- * 
+ *
  * @since 1.0.0
  * @author Miguel Salas
  */
@@ -27,6 +26,6 @@ public interface CameraRepositoryData extends PageableRepository<Camera, String>
 	public List<Camera> findByCountryCodeAndInstallationId(String countrCode, String installationId);
 	public Page<Camera> findByZoneStartingWith(String zoneStarting, Pageable pageable);
 	public List<Camera> findByCountryCodeAndInstallationIdAndZoneStartingWith(String country, String installation, String zoneStarting);
-	@Query(value = "SELECT c.serial FROM Camera c")
-	public List<String> findAllKeysWithPagination(Pageable pageable);
+//	@Query(value = "SELECT c.serial FROM Camera c")
+//	public List<String> findAllKeysWithPagination(Pageable pageable);
 }
