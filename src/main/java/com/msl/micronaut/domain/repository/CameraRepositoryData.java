@@ -6,7 +6,6 @@ import javax.inject.Singleton;
 
 import com.msl.micronaut.domain.entity.Camera;
 
-import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
