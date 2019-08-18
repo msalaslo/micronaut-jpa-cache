@@ -38,30 +38,35 @@ dependencyManagement {
 ext {
     micronautDataVersion = "1.0.0.M1"
     micronautVersion = "1.2.0"
+    mapstructVersion = "1.3.0.Final"
+    lombokVersion = "1.18.8"
 }
 
 
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java"
     compile "io.micronaut:micronaut-inject"
     compile "io.micronaut:micronaut-runtime"
     compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut:micronaut-http-server-netty"
     compile "io.micronaut.configuration:micronaut-hibernate-validator"
     compileOnly "io.micronaut:micronaut-inject-java"
+    compileOnly 'org.projectlombok:lombok:1.18.8'
     
-    //tag::jpa[]
-    compile "io.micronaut.configuration:micronaut-hibernate-jpa" // <1>
-    compile "io.micronaut.configuration:micronaut-jdbc-hikari" // <2>
-    runtime "com.h2database:h2" // <3>
-    //end::jpa[]
+    compile "io.micronaut.configuration:micronaut-hibernate-jpa"
+    compile "io.micronaut.configuration:micronaut-jdbc-hikari" 
+    runtime "com.h2database:h2"
     
-   	// Open API documentation
+    compile "io.swagger.core.v3:swagger-annotations" 
+    
+	annotationProcessor 'org.projectlombok:lombok:1.18.8'
+	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
 	annotationProcessor "io.micronaut.configuration:micronaut-openapi" 
-	compile "io.swagger.core.v3:swagger-annotations" 
-	
-	//Micronaout Data
+	annotationProcessor "io.micronaut:micronaut-inject-java"
 	annotationProcessor "io.micronaut.data:micronaut-data-processor:$micronautDataVersion"
+
+    // If you are using mapstruct in test code
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
+	
 	implementation "io.micronaut.data:micronaut-data-hibernate-jpa:$micronautDataVersion"
 	
     testCompile "io.micronaut:micronaut-inject-java"
@@ -70,22 +75,8 @@ dependencies {
     
     runtime "ch.qos.logback:logback-classic:1.2.3"
     
-    //tag::postgresql[]
-    runtime 'org.postgresql:postgresql:42.2.4'
-    //end::postgresql[]
-	
-	compileOnly 'org.projectlombok:lombok:1.18.8'
-	annotationProcessor 'org.projectlombok:lombok:1.18.8'
-	
-	//mapstruct
-    implementation "org.mapstruct:mapstruct:1.3.0.Final"
-    annotationProcessor "org.mapstruct:mapstruct-processor:1.3.0.Final"
-    // If you are using mapstruct in test code
-    testAnnotationProcessor "org.mapstruct:mapstruct-processor:1.3.0.Final"
-	
 	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
 	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.1'
-
 }
 
 shadowJar {

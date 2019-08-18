@@ -34,10 +34,6 @@ public class CameraController {
 	@Inject
     protected CameraService cameraService;
 
-//    public CameraController(CameraRepository cameraService) { 
-//        this.cameraService = cameraService;
-//    }
-
     @Get("/{serial}") 
     public CameraDTO findById(String serial) {
 		log.info("Finding cameras by id (serial): {}", serial);
@@ -68,14 +64,14 @@ public class CameraController {
 	}
 
     @Put("/") 
-    public HttpResponse update(@Body @Valid CameraDTO camera, @PathVariable String id) { 
-        cameraService.update(camera, id);
+    public HttpResponse update(@Body @Valid CameraDTO camera, String serial) { 
+        cameraService.update(camera, serial);
         return HttpResponse
                 .noContent()
                 .header(HttpHeaders.LOCATION, location(camera.getSerial()).getPath()); 
     }
         
-    @Get(value = "/cameras/page", produces = "application/json")
+    @Get(value = "/page", produces = "application/json")
 	@Operation(description = "Returns paged Cameras caching the camera keys (serial) and then retrieving the content from the individual cache")
 	public HttpResponse<List<CameraDTO>> findAllCachedKeys(final Integer page, final Integer size, final String sort) {
 		log.info("Finding all cameras page: {} and size {}", page, size);
@@ -99,7 +95,7 @@ public class CameraController {
     }
 
     protected URI location(String serial) {
-        return URI.create("/cameras/" + serial);
+        return URI.create("/" + serial);
     }
 
     protected URI location(CameraDTO camera) {

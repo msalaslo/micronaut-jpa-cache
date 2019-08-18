@@ -84,13 +84,11 @@
 			<version>${micronaut.data.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>io.micronaut.configuration</groupId>
 			<artifactId>micronaut-jdbc-hikari</artifactId>
 			<scope>compile</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations</artifactId>
@@ -256,7 +254,12 @@
 							</path>
 							<path>
 								<groupId>io.micronaut</groupId>
-								<artifactId>micronaut-graal</artifactId>
+								<artifactId>micronaut-validation</artifactId>
+								<version>${micronaut.version}</version>
+							</path>
+							<path>
+								<groupId>io.micronaut.configuration</groupId>
+								<artifactId>micronaut-openapi</artifactId>
 								<version>${micronaut.version}</version>
 							</path>
 						</annotationProcessorPaths>
@@ -272,6 +275,16 @@
 									<arg>-parameters</arg>
 								</compilerArgs>
 								<annotationProcessorPaths>
+									<path>
+										<groupId>org.mapstruct</groupId>
+										<artifactId>mapstruct-processor</artifactId>
+										<version>${mapstruct.version}</version>
+									</path>
+									<path>
+										<groupId>org.projectlombok</groupId>
+										<artifactId>lombok</artifactId>
+										<version>${lombok.version}</version>
+									</path>
 									<path>
 										<groupId>io.micronaut</groupId>
 										<artifactId>micronaut-inject-java</artifactId>
