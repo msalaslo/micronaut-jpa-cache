@@ -35,7 +35,7 @@ public class CameraController {
     protected CameraService cameraService;
 
     @Get("/{serial}") 
-    public CameraDTO findById(String serial) {
+    public CameraDTO findById(@PathVariable String serial) {
 		log.info("Finding cameras by id (serial): {}", serial);
 
         return cameraService
@@ -43,7 +43,7 @@ public class CameraController {
                 .orElse(null); 
     }
     
-	@Get("/")
+	@Get
 	public HttpResponse<Iterable<CameraDTO>> findBy(String country, String installation, @Nullable String zone) {
 		if (zone != null) {
 			log.info("Finding cameras by country: {}, installation: {}, zone: {}", country, installation, zone);
@@ -63,8 +63,10 @@ public class CameraController {
 		}
 	}
 
-    @Put("/") 
-    public HttpResponse update(@Body @Valid CameraDTO camera, String serial) { 
+    @Put 
+    public HttpResponse update(@Body @Valid CameraDTO camera, @PathVariable String serial) { 
+		log.info("Updating with serial: {}, camera {}", camera);
+
         cameraService.update(camera, serial);
         return HttpResponse
                 .noContent()
@@ -80,16 +82,20 @@ public class CameraController {
 		return HttpResponse.ok(cameras);
 	}
 
-    @Post("/") 
+    @Post
     public HttpResponse<CameraDTO> save(@Body @Valid CameraDTO camera) {
-        cameraService.put(camera);
+		log.info("Creating camera {}", camera);
+
+        cameraService.updateInRepository(camera,camera.getSerial());
         return HttpResponse
                 .created(camera)
                 .headers(headers -> headers.location(location(camera.getSerial())));
     }
 
     @Delete("/{serial}") 
-    public HttpResponse delete(String serial) {
+    public HttpResponse delete(@PathVariable String serial) {
+		log.info("Deleting camera by serial {}", serial);
+
         cameraService.deleteById(serial);
         return HttpResponse.noContent();
     }

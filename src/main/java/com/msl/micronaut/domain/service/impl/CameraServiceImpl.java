@@ -67,7 +67,7 @@ public class CameraServiceImpl implements CameraService {
 //	@Cacheable(value = "cameras-by-country-and-installation-and-zone", key = "#country + #installation + #zone", cacheManager = "cacheManager", unless = "#result == null")
 	@Cacheable(value = "cameras-by-country-and-installation-and-zone")
 	public Optional<CameraDTO> findByCountryAndInstallationAndZone(String country, String installation, String zone) {
-		log.debug("findBy country {}, installation {}, zone{}:", country, installation, zone);
+		log.info("findBy country {}, installation {}, zone{}:", country, installation, zone);
 //		Optional<Camera> camera = repository.findByCountryCodeAndInstallationIdAndZone(country, installation, zone);
 		Camera camera = repository.findByCountryCodeAndInstallationIdAndZone(country, installation, zone);
 		Optional<Camera> optionalCamera = Optional.of(camera);
@@ -77,7 +77,7 @@ public class CameraServiceImpl implements CameraService {
 //	@Cacheable(value = "cameras-by-country-and-installation", key = "#country + #installation", cacheManager = "cacheManager", unless = "#result == null or #result.size()==0")
 	@Cacheable(value = "cameras-by-country-and-installation")
 	public List<CameraDTO> findByCountryAndInstallation(String country, String installation) {
-		log.debug("findBy country {}, installation {}", country, installation);
+		log.info("findBy country {}, installation {}", country, installation);
 		List<Camera> cameras = repository.findByCountryCodeAndInstallationId(country, installation);
 		return cameraConverter.toListCameraDto(cameras);
 	}
@@ -85,7 +85,7 @@ public class CameraServiceImpl implements CameraService {
 //	@Cacheable(value = "cameras-by-serial", key = "#id", cacheManager = "cacheManager", unless = "#result == null")
 	@Cacheable(value = "cameras-by-serial")
 	public Optional<CameraDTO> findById(String id) {
-		log.debug("findById:" + id);
+		log.info("findById:" + id);
 		Optional<Camera> camera = repository.findById(id);
 		return cameraConverter.toOptionalCameraDto(camera);
 	}
@@ -93,7 +93,7 @@ public class CameraServiceImpl implements CameraService {
 //	@Cacheable(value = "voss-all", cacheManager = "cacheManager", unless = "#result == null")
 	@Cacheable(value = "voss-all")
 	public PageDTO<CameraDTO> findAllVoss(int page, int pageSize) {
-		log.debug("findVossDevices, zone starts with VS");
+		log.info("findVossDevices, zone starts with VS");
 		Pageable pageable = Pageable.from(page, pageSize);
 		Page<Camera> cameraPage = repository.findByZoneStartingWith("VS", pageable);
 		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(null, cameraPage);
@@ -103,7 +103,7 @@ public class CameraServiceImpl implements CameraService {
 //	@Cacheable(value = "voss-by-country-and-installation", key = "#country + #installation", cacheManager = "cacheManager", unless = "#result == null or #result.size()==0")
 	@Cacheable(value = "voss-by-country-and-installation")
 	public List<CameraDTO> findVossDevicesByCountryAndInstallation(String country, String installation) {
-		log.debug("findVossDevices, zone starts with VS and country is {} and installation is {}", country,
+		log.info("findVossDevices, zone starts with VS and country is {} and installation is {}", country,
 				installation);
 		List<Camera> cameras = repository.findByCountryCodeAndInstallationIdAndZoneStartingWith(country, installation, "VS");
 		return cameraConverter.toListCameraDto(cameras);
@@ -128,7 +128,7 @@ public class CameraServiceImpl implements CameraService {
 
 //		@CachePut(value = "voss-by-country-and-installation", key = "#camera.countryCode + #camera.installationId", cacheManager = "cacheManager", condition = "#camera.vossServices != null") })
 		@CachePut(value = "voss-by-country-and-installation")
-		public Iterable<CameraDTO> putVosses(Iterable<CameraDTO> cameras) {
+	public Iterable<CameraDTO> putVosses(Iterable<CameraDTO> cameras) {
 		log.info("PUT::This method does not create the object in the database, only has been cached:" + cameras);
 		return cameras;
 	}
@@ -136,7 +136,7 @@ public class CameraServiceImpl implements CameraService {
 //	@CachePut(key = "#id", value = "cameras-by-serial", cacheManager = "cacheManager", unless = "#result == null")
 	@CachePut(value = "cameras-by-serial")
 	public CameraDTO update(CameraDTO camera, String id) {
-		log.debug("This method does not integrate with the database, update camera {} with id {}:", camera, id);
+		log.info("This method does not integrate with the database, update camera {} with id {}:", camera, id);
 		return repository.findById(id).map(newCamera -> {
 			camera.setSerial(camera.getSerial());
 			return camera;
@@ -148,20 +148,20 @@ public class CameraServiceImpl implements CameraService {
 
 	@CacheInvalidate(value = "cameras-by-serial")
 	public void deleteById(String id) {
-		log.debug("This method does not integrate with the database, deleteById:" + id);
+		log.info("This method does not integrate with the database, deleteById:" + id);
 	}
 
 //	@CachePut(key = "#camera.id", value = "cameras-by-serial", cacheManager = "cacheManager")
 	@CachePut(value = "cameras-by-serial")
 	public Camera createInRepository(Camera camera) {
-		log.debug("create:" + camera);
+		log.info("create:" + camera);
 		return repository.save(camera);
 	}
 
 //	@CachePut(key = "#id", value = "cameras-by-serial", cacheManager = "cacheManager", unless = "#result == null")
 	@CachePut(value = "cameras-by-serial")
 	public CameraDTO updateInRepository(CameraDTO camera, String id) {
-		log.debug("update camera {} with id {}:", camera, id);
+		log.info("update camera {} with id {}:", camera, id);
 		Camera cameraEntity = cameraConverter.toCameraEntity(camera);
 		Optional<Camera> newCamera = repository.findById(id);
 		if(newCamera.isPresent()){
@@ -175,7 +175,7 @@ public class CameraServiceImpl implements CameraService {
 
 	@CacheInvalidate(value = "cameras-by-serial")
 	public void deleteByIdInRepository(String id) {
-		log.debug("deleteById:" + id);
+		log.info("deleteById:" + id);
 		repository.deleteById(id);
 	}
 
@@ -199,7 +199,7 @@ public class CameraServiceImpl implements CameraService {
 
 	@Override
 	public long count() {
-		log.debug("count");
+		log.info("count");
 		return repository.count();
 	}
 }

@@ -17,7 +17,6 @@ import org.junit.rules.ExpectedException;
 import com.msl.micronaut.domain.entity.Camera;
 
 import io.micronaut.context.ApplicationContext;
-import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
@@ -25,13 +24,18 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.runtime.server.EmbeddedServer;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CameraControllerTest {
 
     private static EmbeddedServer server; 
     private static HttpClient client; 
     
     private static final String BASE_PATH = "/correlation/v1.0";
+    
+    List<Long> cameraIds = new ArrayList<>();
+
 
     @BeforeClass
     public static void setupServer() {
@@ -63,27 +67,30 @@ public class CameraControllerTest {
 
     @Test
     public void testFindNonExistingCameraReturns404() {
+    	log.info("testFindNonExistingCameraReturns404");
         thrown.expect(HttpClientResponseException.class);
         thrown.expect(hasProperty("response", hasProperty("status", is(HttpStatus.NOT_FOUND))));
         HttpResponse response = client.toBlocking().exchange(HttpRequest.GET(BASE_PATH + "/cameras/99"));
     }
-
+    
     @Test
-    public void testCameraCrudOperations() {
+    public void testCameraInsertOperation() {
+    	log.info("testCameraInsertOperation");
 
-        List<Long> cameraIds = new ArrayList<>();
-        
-        CameraSaveCommand command1 = new CameraSaveCommand("123456789","123456789","ESP", "123456789", "01", "666666", "alias", new Date(), new Date(), "0");
-
+        Camera command1 = new Camera("123456789","123456789","ESP", "123456789", "01", "666666", "alias", new Date(), new Date(), "0");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command1); 
         HttpResponse response = client.toBlocking().exchange(request);
         cameraIds.add(entityId(response));
-
         assertEquals(HttpStatus.CREATED, response.getStatus());
+    }
+    
+    @Test
+    public void testCameraInsertAndRetrieveOperation() {
+    	log.info("testCameraUpdateOperations");
         
-        CameraSaveCommand command2 = new CameraSaveCommand("123456789","123456789","ESP", "123456789", "01", "666666", "alias", new Date(), new Date(), "0");
-        request = HttpRequest.POST(BASE_PATH + "/cameras", command2); 
-        response = client.toBlocking().exchange(request);
+        Camera command2 = new Camera("123456789","123456789","ESP", "123456789", "01", "666666", "alias", new Date(), new Date(), "0");
+        HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command2); 
+        HttpResponse response = client.toBlocking().exchange(request);
 
         assertEquals(HttpStatus.CREATED, response.getStatus());
 
@@ -94,17 +101,38 @@ public class CameraControllerTest {
         Camera camera = client.toBlocking().retrieve(request, Camera.class); 
 
         assertEquals("alias", camera.getAlias());
+    }
+    
+    @Test
+    public void testCameraUpdateOperations() {
+    	log.info("testCameraUpdateOperations");
 
-        CameraUpdateCommand updateCommand = new CameraUpdateCommand("123456789","123456789","ESP", "987654321", "01", "666666", "alias1", new Date(), new Date(), "0");
+        HttpRequest request = null;
+        HttpResponse response = null;
+        Camera camera = null;
+        
+        String serial = "123456789";
+        Camera updateCommand = new Camera(serial,"123456789","ESP", "987654321", "01", "666666", "alias1", new Date(), new Date(), "0");
 
         request = HttpRequest.PUT(BASE_PATH + "/cameras", updateCommand);
         response = client.toBlocking().exchange(request);  
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatus());
 
-        request = HttpRequest.GET(BASE_PATH + "/cameras/" + id);
+        request = HttpRequest.GET(BASE_PATH + "/cameras/" + serial);
         camera = client.toBlocking().retrieve(request, Camera.class);
         assertEquals("alias1", camera.getAlias());
+
+    }
+
+    @Test
+    public void testCameraPaginationOperations() {
+    	log.info("testCameraPaginationOperations");
+
+        List<Long> cameraIds = new ArrayList<>();
+        HttpRequest request = null;
+        HttpResponse response = null;
+        Camera camera = null;
 
 //        request = HttpRequest.GET(BASE_PATH + "/cameras/list");
 //        List<Camera> cameras = client.toBlocking().retrieve(request, Argument.of(List.class, Camera.class));
