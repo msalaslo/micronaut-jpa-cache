@@ -14,7 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.msl.micronaut.domain.entity.Camera;
+import com.msl.micronaut.api.dto.CameraDTO;
 
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.http.HttpHeaders;
@@ -77,7 +77,7 @@ public class CameraControllerTest {
     public void testCameraInsertOperation() {
     	log.info("testCameraInsertOperation");
 
-        Camera command1 = new Camera("123456789","123456789","ESP", "123456789", "01", "666666", "alias", new Date(), new Date(), "0");
+        CameraDTO command1 = new CameraDTO("123456789","123456789","ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command1); 
         HttpResponse response = client.toBlocking().exchange(request);
         cameraIds.add(entityId(response));
@@ -88,7 +88,7 @@ public class CameraControllerTest {
     public void testCameraInsertAndRetrieveOperation() {
     	log.info("testCameraUpdateOperations");
         
-        Camera command2 = new Camera("123456789","123456789","ESP", "123456789", "01", "666666", "alias", new Date(), new Date(), "0");
+    	CameraDTO command2 = new CameraDTO("123456789","123456789","ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command2); 
         HttpResponse response = client.toBlocking().exchange(request);
 
@@ -98,7 +98,7 @@ public class CameraControllerTest {
         cameraIds.add(id);
         request = HttpRequest.GET(BASE_PATH + "/cameras/"+id);
 
-        Camera camera = client.toBlocking().retrieve(request, Camera.class); 
+        CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class); 
 
         assertEquals("alias", camera.getAlias());
     }
@@ -109,10 +109,9 @@ public class CameraControllerTest {
 
         HttpRequest request = null;
         HttpResponse response = null;
-        Camera camera = null;
         
         String serial = "123456789";
-        Camera updateCommand = new Camera(serial,"123456789","ESP", "987654321", "01", "666666", "alias1", new Date(), new Date(), "0");
+        CameraDTO updateCommand = new CameraDTO(serial,"123456789","ESP", "987654321", "01", "alias1", new Date(), new Date(), "0");
 
         request = HttpRequest.PUT(BASE_PATH + "/cameras", updateCommand);
         response = client.toBlocking().exchange(request);  
@@ -120,7 +119,7 @@ public class CameraControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatus());
 
         request = HttpRequest.GET(BASE_PATH + "/cameras/" + serial);
-        camera = client.toBlocking().retrieve(request, Camera.class);
+        CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class);
         assertEquals("alias1", camera.getAlias());
 
     }
@@ -132,7 +131,7 @@ public class CameraControllerTest {
         List<Long> cameraIds = new ArrayList<>();
         HttpRequest request = null;
         HttpResponse response = null;
-        Camera camera = null;
+        CameraDTO camera = null;
 
 //        request = HttpRequest.GET(BASE_PATH + "/cameras/list");
 //        List<Camera> cameras = client.toBlocking().retrieve(request, Argument.of(List.class, Camera.class));
