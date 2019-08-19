@@ -39,14 +39,27 @@ public class CameraRepositoryImpl implements CameraRepository {
 		return Optional.ofNullable(entityManager.find(Camera.class, serial));
 	}
 	
+	@Override
+	@Transactional(readOnly = true)
+	public Camera findBySerial(String serial) {
+		return entityManager.find(Camera.class, serial);
+	}
+	
     @Override
     @Transactional 
-    public Camera save(@NotBlank String serial, @NotBlank String id, @NotBlank String countryCode, @NotBlank String installationId, @NotBlank String zone,
+    public Camera save(@NotBlank String serial, @NotBlank int id, @NotBlank String countryCode, @NotBlank String installationId, @NotBlank String zone,
     		@NotBlank String password, @NotBlank String alias, @NotBlank Date creationTime, @NotBlank Date lasUpdateTime, @NotBlank String vossServices) {
         Camera camera = new Camera(serial, id, countryCode, installationId, zone, password, alias, creationTime, lasUpdateTime, vossServices);
         entityManager.persist(camera);
         return camera;
     }
+    
+    @Override
+    @Transactional 
+    public Camera save(@NotBlank Camera camera) {
+        entityManager.persist(camera);
+        return camera;
+    }    
     
     @Override
     @Transactional
@@ -69,7 +82,20 @@ public class CameraRepositoryImpl implements CameraRepository {
 
         return query.getResultList();
     }
+    
+    @Transactional(readOnly = true)
+    public List<String> findAllKeys(@NotNull SortingAndOrderArguments args) {
+        String qlString = "SELECT c.serial FROM Camera as c";
+        if (args.getOrder().isPresent() && args.getSort().isPresent() && VALID_PROPERTY_NAMES.contains(args.getSort().get())) {
+                qlString += " ORDER BY c." + args.getSort().get() + " " + args.getOrder().get().toLowerCase();
+        }
+        TypedQuery<String> query = entityManager.createQuery(qlString, String.class);
+        query.setMaxResults(args.getMax().orElseGet(applicationConfiguration::getMax));
+        args.getOffset().ifPresent(query::setFirstResult);
 
+        return query.getResultList();
+    }
+    
     @Override
     @Transactional
     public int update(@NotNull String serial, String id, String countryCode, String installationId, String zone,
@@ -90,7 +116,7 @@ public class CameraRepositoryImpl implements CameraRepository {
 
     @Override
     @Transactional(readOnly = true)
-	public Optional<Camera> findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId,
+	public Camera findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId,
 			String zone) {
 		log.info("Finding cameras findByCountryCodeAndInstallationIdAndZone::countryCode: {}, installationId: {}, zone: {}", countryCode, installationId, zone);
 
@@ -99,7 +125,7 @@ public class CameraRepositoryImpl implements CameraRepository {
                 .setParameter("countryCode", countryCode)
                 .setParameter("installationId", installationId)
                 .setParameter("zone", zone);
-        return query.getResultStream().findFirst();
+        return query.getResultStream().findFirst().get();
 	}
 
     @Override
@@ -125,5 +151,29 @@ public class CameraRepositoryImpl implements CameraRepository {
                 .setParameter("zoneStarting", zoneStarting);
         return query.getResultList();
 	}
-
+    
+    @Override
+    @Transactional(readOnly = true)
+	public List<Camera> findByZoneStartingWith(String zoneStarting, @NotNull SortingAndOrderArguments args) {
+        String qlString = "SELECT c FROM Camera as c where zone like :zoneStarting%";
+        if (args.getOrder().isPresent() && args.getSort().isPresent() && VALID_PROPERTY_NAMES.contains(args.getSort().get())) {
+            qlString += " ORDER BY c." + args.getSort().get() + " " + args.getOrder().get().toLowerCase();
+    }
+        TypedQuery<Camera> query = entityManager.createQuery(qlString, Camera.class)
+                .setParameter("zoneStarting", zoneStarting);
+        
+        query.setMaxResults(args.getMax().orElseGet(applicationConfiguration::getMax));
+        args.getOffset().ifPresent(query::setFirstResult);
+        
+        return query.getResultList();
+	}    
+    
+    @Override
+    @Transactional(readOnly = true)
+	public long count() {
+        String qlString = "SELECT count(c) FROM Camera c";
+        TypedQuery<Long> query = entityManager.createQuery(qlString, Long.class);
+        Long count = (long)query.getSingleResult();
+        return count;
+	}
 }

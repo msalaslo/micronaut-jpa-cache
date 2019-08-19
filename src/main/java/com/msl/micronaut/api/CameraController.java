@@ -35,11 +35,11 @@ public class CameraController {
     protected CameraService cameraService;
 
     @Get("/{serial}") 
-    public CameraDTO findById(@PathVariable String serial) {
+    public CameraDTO findBySerial(String serial) {
 		log.info("Finding cameras by id (serial): {}", serial);
 
         return cameraService
-                .findById(serial)
+                .findBySerial(serial)
                 .orElse(null); 
     }
     
@@ -64,7 +64,7 @@ public class CameraController {
 	}
 
     @Put 
-    public HttpResponse update(@Body @Valid CameraDTO camera, @PathVariable String serial) { 
+    public HttpResponse update(@Body @Valid CameraDTO camera, String serial) { 
 		log.info("Updating with serial: {}, camera {}", camera);
 
         cameraService.update(camera, serial);
@@ -78,7 +78,7 @@ public class CameraController {
 	public HttpResponse<List<CameraDTO>> findAllCachedKeys(final Integer page, final Integer size, final String sort) {
 		log.info("Finding all cameras page: {} and size {}", page, size);
 		List<String> keys = cameraService.findAllKeys(page, size);
-		List<CameraDTO> cameras = keys.stream().map(cameraService::findById).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+		List<CameraDTO> cameras = keys.stream().map(cameraService::findBySerial).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 		return HttpResponse.ok(cameras);
 	}
 

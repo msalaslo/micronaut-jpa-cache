@@ -29,7 +29,7 @@ public class CameraDTO extends BaseDTO implements Serializable {
 	public String serial;
 
     @Schema(description = "id autoincremental", required = true)
-	public String id;
+	public int id;
 
     @Schema(description = "Country code", required = true)
 	public String countryCode;

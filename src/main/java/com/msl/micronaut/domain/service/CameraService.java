@@ -8,7 +8,7 @@ import com.msl.micronaut.api.dto.PageDTO;
 
 public interface CameraService {
 	public CameraDTO put(CameraDTO camera);
-	public Optional<CameraDTO> findById(String id);
+	public Optional<CameraDTO> findBySerial(String serial);
 	public Iterable<CameraDTO> findByCountryAndInstallation(String country, String installation);
 	public Optional<CameraDTO> findByCountryAndInstallationAndZone(String country, String installation, String zone);	
 	public CameraDTO update(CameraDTO camera, String id);

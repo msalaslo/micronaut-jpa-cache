@@ -34,9 +34,6 @@ public class CameraControllerTest {
     
     private static final String BASE_PATH = "/correlation/v1.0";
     
-    List<Long> cameraIds = new ArrayList<>();
-
-
     @BeforeClass
     public static void setupServer() {
         server = ApplicationContext
@@ -58,12 +55,12 @@ public class CameraControllerTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-//    @Test
-//    public void supplyAnInvalidOrderTriggersValidationFailure() {
-//        thrown.expect(HttpClientResponseException.class);
-//        thrown.expect(hasProperty("response", hasProperty("status", is(HttpStatus.BAD_REQUEST))));
-//        client.toBlocking().exchange(HttpRequest.GET(BASE_PATH + "/cameras?order=foo"));
-//    }
+    @Test
+    public void supplyAnInvalidOrderTriggersValidationFailure() {
+        thrown.expect(HttpClientResponseException.class);
+        thrown.expect(hasProperty("response", hasProperty("status", is(HttpStatus.BAD_REQUEST))));
+        client.toBlocking().exchange(HttpRequest.GET(BASE_PATH + "/cameras/page?order=foo"));
+    }
 
     @Test
     public void testFindNonExistingCameraReturns404() {
@@ -77,30 +74,34 @@ public class CameraControllerTest {
     public void testCameraInsertOperation() {
     	log.info("testCameraInsertOperation");
 
-        CameraDTO command1 = new CameraDTO("123456789","123456789","ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
+        CameraDTO command1 = new CameraDTO("123456789", 123456789,"ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command1); 
         HttpResponse response = client.toBlocking().exchange(request);
-        cameraIds.add(entityId(response));
+        String serial = entityId(response);
         assertEquals(HttpStatus.CREATED, response.getStatus());
+        
+        deleteBySerial(serial);
     }
     
     @Test
     public void testCameraInsertAndRetrieveOperation() {
     	log.info("testCameraUpdateOperations");
         
-    	CameraDTO command2 = new CameraDTO("123456789","123456789","ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
+    	CameraDTO command2 = new CameraDTO("123456789", 123456789 ,"ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command2); 
         HttpResponse response = client.toBlocking().exchange(request);
 
         assertEquals(HttpStatus.CREATED, response.getStatus());
 
-        Long id = entityId(response);
-        cameraIds.add(id);
-        request = HttpRequest.GET(BASE_PATH + "/cameras/"+id);
+        String serial = entityId(response);
+        log.info("testCameraUpdateOperations id:" + serial);
+        request = HttpRequest.GET(BASE_PATH + "/cameras/" + serial);
 
         CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class); 
 
         assertEquals("alias", camera.getAlias());
+        
+        deleteBySerial(serial);
     }
     
     @Test
@@ -111,7 +112,7 @@ public class CameraControllerTest {
         HttpResponse response = null;
         
         String serial = "123456789";
-        CameraDTO updateCommand = new CameraDTO(serial,"123456789","ESP", "987654321", "01", "alias1", new Date(), new Date(), "0");
+        CameraDTO updateCommand = new CameraDTO(serial, 123456789,"ESP", "987654321", "01", "alias1", new Date(), new Date(), "0");
 
         request = HttpRequest.PUT(BASE_PATH + "/cameras", updateCommand);
         response = client.toBlocking().exchange(request);  
@@ -121,7 +122,8 @@ public class CameraControllerTest {
         request = HttpRequest.GET(BASE_PATH + "/cameras/" + serial);
         CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class);
         assertEquals("alias1", camera.getAlias());
-
+        
+        deleteBySerial(serial);
     }
 
     @Test
@@ -155,23 +157,26 @@ public class CameraControllerTest {
 //
 //        assertEquals(0, cameras.size());
 
-        // cleanup:
-        for (Long cameraId : cameraIds) {
-            request = HttpRequest.DELETE(BASE_PATH + "/cameras/"+cameraId);
-            response = client.toBlocking().exchange(request);
-            assertEquals(HttpStatus.NO_CONTENT, response.getStatus());
-        }
+    }
+    
+    protected void deleteBySerial(String serial) {
+        HttpRequest request = null;
+        HttpResponse response = null;
+    	request = HttpRequest.DELETE(BASE_PATH + "/cameras/"+serial);
+        response = client.toBlocking().exchange(request);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatus());
     }
 
-    protected Long entityId(HttpResponse response) {
-        String path = BASE_PATH + "/cameras/";
+    protected String entityId(HttpResponse response) {
+        String path = "/";
         String value = response.header(HttpHeaders.LOCATION);
+        log.info("entityId, location:" + value);
         if ( value == null) {
             return null;
         }
         int index = value.indexOf(path);
         if ( index != -1) {
-            return Long.valueOf(value.substring(index + path.length()));
+            return value.substring(index + path.length());
         }
         return null;
     }
