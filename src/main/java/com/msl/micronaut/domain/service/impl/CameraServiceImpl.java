@@ -1,5 +1,6 @@
 package com.msl.micronaut.domain.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,9 +10,8 @@ import javax.inject.Singleton;
 import com.msl.micronaut.api.converter.CameraConverter;
 import com.msl.micronaut.api.dto.CameraDTO;
 import com.msl.micronaut.api.dto.PageDTO;
-import com.msl.micronaut.domain.SortingAndOrderArguments;
 import com.msl.micronaut.domain.entity.Camera;
-import com.msl.micronaut.domain.repository.CameraRepository;
+import com.msl.micronaut.domain.repository.CameraRepositoryData;
 import com.msl.micronaut.domain.service.CameraService;
 
 import io.micronaut.cache.annotation.CacheInvalidate;
@@ -19,6 +19,8 @@ import io.micronaut.cache.annotation.CachePut;
 import io.micronaut.cache.annotation.Cacheable;
 import io.micronaut.cache.annotation.InvalidateOperations;
 import io.micronaut.cache.annotation.PutOperations;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -26,14 +28,10 @@ import lombok.extern.slf4j.Slf4j;
 public class CameraServiceImpl implements CameraService {
 
 	@Inject
-	CameraRepository repository;
+	CameraRepositoryData repository;
 
 	@Inject
 	CameraConverter cameraConverter;
-
-    @Inject
-    public CameraServiceImpl(CameraConverter cameraConverter) {
-    }
 
 	//@Cacheable(value = "cameras-all", cacheManager = "cacheManager", unless = "#result == null")
 	@Cacheable(value = "cameras-all")
@@ -44,29 +42,29 @@ public class CameraServiceImpl implements CameraService {
 
 	public PageDTO<CameraDTO> findAllNoCache(int page, int pageSize) {
 		log.info("findAllNocache");
-//		PageDTO<CameraDTO> camerasDtoPage = findAllForSpringAndMicronautData(page, pageSize);
-		PageDTO<CameraDTO> camerasDtoPage = findAllForMicronautJDBC(page, pageSize);
+		PageDTO<CameraDTO> camerasDtoPage = findAllForSpringAndMicronautData(page, pageSize);
+//		PageDTO<CameraDTO> camerasDtoPage = findAllForMicronautJDBC(page, pageSize);
 		
 		return camerasDtoPage;
 	}
 	
-//	private Page<Camera> findPage(int page, int pageSize) {
-//		Pageable pageable = Pageable.from(page, pageSize);
-//		return repository.findAll(pageable);
-//	}
+	private Page<Camera> findPage(int page, int pageSize) {
+		Pageable pageable = Pageable.from(page, pageSize);
+		return repository.findAll(pageable);
+	}
 	
-//	private PageDTO<CameraDTO> findAllForSpringAndMicronautData(int page, int pageSize) {
-//		Page<Camera> cameraPage = findPage(page, pageSize);
-//		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(null, cameraPage);
-//		return camerasDtoPage;
-//	}
-	
-	private PageDTO<CameraDTO> findAllForMicronautJDBC(int page, int pageSize) {
-		SortingAndOrderArguments sortingAndOrderArgs = new SortingAndOrderArguments();		
-		List<Camera> cameraPage = repository.findAll(sortingAndOrderArgs);
-		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(cameraPage, page);
+	private PageDTO<CameraDTO> findAllForSpringAndMicronautData(int page, int pageSize) {
+		Page<Camera> cameraPage = findPage(page, pageSize);
+		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(null, cameraPage);
 		return camerasDtoPage;
 	}
+	
+//	private PageDTO<CameraDTO> findAllForMicronautJDBC(int page, int pageSize) {
+//		SortingAndOrderArguments sortingAndOrderArgs = new SortingAndOrderArguments();		
+//		List<Camera> cameraPage = repository.findAll(sortingAndOrderArgs);
+//		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(cameraPage, page);
+//		return camerasDtoPage;
+//	}
 	
 	
 
@@ -74,24 +72,24 @@ public class CameraServiceImpl implements CameraService {
 	@Cacheable(value = "cameras-all-keys")
 	public List<String> findAllKeys(int page, int pageSize) {
 		log.info("findAllKeys");
-//		return findAllKeysForSpringAndMicronautData(page, pageSize);
-		return findAllKeysForMicronautJDBC(page, pageSize);
+		return findAllKeysForSpringAndMicronautData(page, pageSize);
+//		return findAllKeysForMicronautJDBC(page, pageSize);
 	}
 	
-//	private List<String> findAllKeysForSpringAndMicronautData(int page, int pageSize) {
-//		log.info("findAllKeysForSpringAndMicronautData");
-//		Page<Camera> cameraPage = findPage(page, pageSize);
-//		//workarounf for micronaut
-//		List<String> cameraKeysPage = new ArrayList<String>();
-//		cameraPage.forEach(camera -> cameraKeysPage.add(camera.getSerial()));
-//		return cameraKeysPage;
+	private List<String> findAllKeysForSpringAndMicronautData(int page, int pageSize) {
+		log.info("findAllKeysForSpringAndMicronautData");
+		Page<Camera> cameraPage = findPage(page, pageSize);
+		//workarounf for micronaut
+		List<String> cameraKeysPage = new ArrayList<String>();
+		cameraPage.forEach(camera -> cameraKeysPage.add(camera.getSerial()));
+		return cameraKeysPage;
+	}
+	
+//	private List<String> findAllKeysForMicronautJDBC(int page, int pageSize) {
+//		log.info("findAllKeysForMicronautJDBC");		
+//		SortingAndOrderArguments sortingAndOrderArgs = new SortingAndOrderArguments();		
+//		return repository.findAllKeys(sortingAndOrderArgs);
 //	}
-	
-	private List<String> findAllKeysForMicronautJDBC(int page, int pageSize) {
-		log.info("findAllKeysForMicronautJDBC");		
-		SortingAndOrderArguments sortingAndOrderArgs = new SortingAndOrderArguments();		
-		return repository.findAllKeys(sortingAndOrderArgs);
-	}
 	
 	
 
@@ -126,27 +124,27 @@ public class CameraServiceImpl implements CameraService {
 	@Cacheable(value = "voss-all")
 	public PageDTO<CameraDTO> findAllVoss(int page, int pageSize) {
 		log.info("findVossDevices, zone starts with VS");
-//		return findAllVossForSptringAndMicronautData(page, pageSize);
-		return findAllVossForMicronautJDBC(page, pageSize);
+		return findAllVossForSptringAndMicronautData(page, pageSize);
+//		return findAllVossForMicronautJDBC(page, pageSize);
 	}
 	
-	private PageDTO<CameraDTO> findAllVossForMicronautJDBC(int page, int pageSize) {
-		log.info("findAllVossForMicronautJDBC");
-		SortingAndOrderArguments args = new SortingAndOrderArguments();
-		args.setMax(page);
-		args.setOffset(pageSize);
-		List<Camera> cameraPage = repository.findByZoneStartingWith("VS", args);
-		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(cameraPage, page);
-		return camerasDtoPage;
-	}
-	
-//	private PageDTO<CameraDTO> findAllVossForSptringAndMicronautData(int page, int pageSize) {
-//		log.info("findAllVossForSptringAndMicronautData");
-//		Pageable pageable = Pageable.from(page, pageSize);
-//		Page<Camera> cameraPage = repository.findByZoneStartingWith("VS", pageable);
-//		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(null, cameraPage);
+//	private PageDTO<CameraDTO> findAllVossForMicronautJDBC(int page, int pageSize) {
+//		log.info("findAllVossForMicronautJDBC");
+//		SortingAndOrderArguments args = new SortingAndOrderArguments();
+//		args.setMax(page);
+//		args.setOffset(pageSize);
+//		List<Camera> cameraPage = repository.findByZoneStartingWith("VS", args);
+//		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(cameraPage, page);
 //		return camerasDtoPage;
 //	}
+	
+	private PageDTO<CameraDTO> findAllVossForSptringAndMicronautData(int page, int pageSize) {
+		log.info("findAllVossForSptringAndMicronautData");
+		Pageable pageable = Pageable.from(page, pageSize);
+		Page<Camera> cameraPage = repository.findByZoneStartingWith("VS", pageable);
+		PageDTO<CameraDTO> camerasDtoPage = cameraConverter.toPageCameraDto(null, cameraPage);
+		return camerasDtoPage;
+	}
 
 //	@Cacheable(value = "voss-by-country-and-installation", key = "#country + #installation", cacheManager = "cacheManager", unless = "#result == null or #result.size()==0")
 	@Cacheable(value = "voss-by-country-and-installation")
@@ -193,13 +191,6 @@ public class CameraServiceImpl implements CameraService {
 		log.info("This method does not integrate with the database, deleteById:" + id);
 	}
 
-//	@CachePut(key = "#camera.id", value = "cameras-by-serial", cacheManager = "cacheManager")
-	@CachePut(value = "cameras-by-serial")
-	public Camera createInRepository(Camera camera) {
-		log.info("create:" + camera);
-		return repository.save(camera);
-	}
-
 //	@CachePut(key = "#id", value = "cameras-by-serial", cacheManager = "cacheManager", unless = "#result == null")
 	@CachePut(value = "cameras-by-serial")
 	public CameraDTO updateInRepository(CameraDTO camera, String serial) {
@@ -216,6 +207,14 @@ public class CameraServiceImpl implements CameraService {
 		}else{
 			return null;
 		}
+	}
+	
+	@CachePut(value = "cameras-by-serial")
+	public CameraDTO insertInRepository(CameraDTO camera, String serial) {
+		log.info("update camera {} with serial {}:", camera, serial);
+		Camera cameraEntity = cameraConverter.toCameraEntity(camera);
+		Camera newCameraEntity = repository.save(cameraEntity);
+		return cameraConverter.toCameraDto(newCameraEntity);
 	}
 
 	@CacheInvalidate(value = "cameras-by-serial")

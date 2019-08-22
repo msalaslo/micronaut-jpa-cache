@@ -85,7 +85,7 @@ public class CameraControllerTest {
     
     @Test
     public void testCameraInsertAndRetrieveOperation() {
-    	log.info("testCameraUpdateOperations");
+    	log.info("testCameraInsertAndRetrieveOperation");
         
     	CameraDTO command2 = new CameraDTO("123456789", 123456789 ,"ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command2); 
@@ -94,10 +94,12 @@ public class CameraControllerTest {
         assertEquals(HttpStatus.CREATED, response.getStatus());
 
         String serial = entityId(response);
-        log.info("testCameraUpdateOperations id:" + serial);
+        log.info("testCameraUpdateOperations serial:" + serial);
         request = HttpRequest.GET(BASE_PATH + "/cameras/" + serial);
 
-        CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class); 
+        CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class);
+        
+        log.info("testCameraUpdateOperations, retrieved camera:{} for serial:{}", camera, serial);
 
         assertEquals("alias", camera.getAlias());
         
@@ -112,7 +114,8 @@ public class CameraControllerTest {
         HttpResponse response = null;
         
         String serial = "123456789";
-        CameraDTO updateCommand = new CameraDTO(serial, 123456789,"ESP", "987654321", "01", "alias1", new Date(), new Date(), "0");
+        String alias = "alias1";
+        CameraDTO updateCommand = new CameraDTO(serial, 123456789,"ESP", "987654321", "01", alias , new Date(), new Date(), "0");
 
         request = HttpRequest.PUT(BASE_PATH + "/cameras", updateCommand);
         response = client.toBlocking().exchange(request);  
@@ -121,7 +124,9 @@ public class CameraControllerTest {
 
         request = HttpRequest.GET(BASE_PATH + "/cameras/" + serial);
         CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class);
-        assertEquals("alias1", camera.getAlias());
+        
+        log.info("testCameraUpdateOperations, retrieved camera:{} for serial:{}", camera, serial);        
+        assertEquals(alias, camera.getAlias());
         
         deleteBySerial(serial);
     }

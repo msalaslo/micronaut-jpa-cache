@@ -62,16 +62,6 @@ public class CameraController {
 			return HttpResponse.badRequest();
 		}
 	}
-
-    @Put 
-    public HttpResponse update(@Body @Valid CameraDTO camera, String serial) { 
-		log.info("Updating with serial: {}, camera {}", camera);
-
-        cameraService.update(camera, serial);
-        return HttpResponse
-                .noContent()
-                .header(HttpHeaders.LOCATION, location(camera.getSerial()).getPath()); 
-    }
         
     @Get(value = "/page", produces = "application/json")
 	@Operation(description = "Returns paged Cameras caching the camera keys (serial) and then retrieving the content from the individual cache")
@@ -86,11 +76,21 @@ public class CameraController {
     public HttpResponse<CameraDTO> save(@Body @Valid CameraDTO camera) {
 		log.info("Creating camera {}", camera);
 
-        cameraService.updateInRepository(camera,camera.getSerial());
+        cameraService.insertInRepository(camera,camera.getSerial());
         return HttpResponse
                 .created(camera)
                 .headers(headers -> headers.location(location(camera.getSerial())));
     }
+    
+    @Put 
+    public HttpResponse update(@Body @Valid CameraDTO camera, String serial) { 
+		log.info("Updating with serial: {}, camera {}", serial, camera);
+
+        cameraService.updateInRepository(camera, serial);
+        return HttpResponse
+                .noContent()
+                .header(HttpHeaders.LOCATION, location(camera.getSerial()).getPath()); 
+    }    
 
     @Delete("/{serial}") 
     public HttpResponse delete(@PathVariable String serial) {

@@ -238,6 +238,11 @@
 							</path>
 							<path>
 								<groupId>io.micronaut.data</groupId>
+								<artifactId>micronaut-data-model</artifactId>
+								<version>${micronaut.data.version}</version>
+							</path>							
+							<path>
+								<groupId>io.micronaut.data</groupId>
 								<artifactId>micronaut-data-processor</artifactId>
 								<version>${micronaut.data.version}</version>
 							</path>
