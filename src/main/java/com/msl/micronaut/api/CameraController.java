@@ -96,7 +96,9 @@ public class CameraController {
     public HttpResponse delete(@PathVariable String serial) {
 		log.info("Deleting camera by serial {}", serial);
 
-        cameraService.deleteById(serial);
+//        cameraService.deleteById(serial);
+		cameraService.deleteByIdInRepository(serial);
+        
         return HttpResponse.noContent();
     }
 

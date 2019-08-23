@@ -73,11 +73,12 @@ public class CameraControllerTest {
     @Test
     public void testCameraInsertOperation() {
     	log.info("testCameraInsertOperation");
-
-        CameraDTO command1 = new CameraDTO("123456789", 123456789,"ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
+    	String serial = "123456789";
+    	deleteBySerial(serial);
+        CameraDTO command1 = new CameraDTO(serial, 123456789,"ESP", "123456789", "01", "alias", new Date(), new Date(), "0", "11111");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command1); 
         HttpResponse response = client.toBlocking().exchange(request);
-        String serial = entityId(response);
+        String serialRetrieved = entityId(response);
         assertEquals(HttpStatus.CREATED, response.getStatus());
         
         deleteBySerial(serial);
@@ -86,20 +87,21 @@ public class CameraControllerTest {
     @Test
     public void testCameraInsertAndRetrieveOperation() {
     	log.info("testCameraInsertAndRetrieveOperation");
-        
-    	CameraDTO command2 = new CameraDTO("123456789", 123456789 ,"ESP", "123456789", "01", "alias", new Date(), new Date(), "0");
+    	String serial = "123456789";
+    	deleteBySerial(serial);
+    	CameraDTO command2 = new CameraDTO(serial, 123456789 ,"ESP", "123456789", "01", "alias", new Date(), new Date(), "0", "11111");
         HttpRequest request = HttpRequest.POST(BASE_PATH + "/cameras", command2); 
         HttpResponse response = client.toBlocking().exchange(request);
 
         assertEquals(HttpStatus.CREATED, response.getStatus());
 
-        String serial = entityId(response);
-        log.info("testCameraUpdateOperations serial:" + serial);
-        request = HttpRequest.GET(BASE_PATH + "/cameras/" + serial);
+        String serialRetrieved = entityId(response);
+        log.info("testCameraUpdateOperations serial:" + serialRetrieved);
+        request = HttpRequest.GET(BASE_PATH + "/cameras/" + serialRetrieved);
 
         CameraDTO camera = client.toBlocking().retrieve(request, CameraDTO.class);
         
-        log.info("testCameraUpdateOperations, retrieved camera:{} for serial:{}", camera, serial);
+        log.info("testCameraUpdateOperations, retrieved camera:{} for serial:{}", camera, serialRetrieved);
 
         assertEquals("alias", camera.getAlias());
         
@@ -113,9 +115,11 @@ public class CameraControllerTest {
         HttpRequest request = null;
         HttpResponse response = null;
         
-        String serial = "123456789";
+    	String serial = "123456789";
+    	deleteBySerial(serial);
+    	
         String alias = "alias1";
-        CameraDTO updateCommand = new CameraDTO(serial, 123456789,"ESP", "987654321", "01", alias , new Date(), new Date(), "0");
+        CameraDTO updateCommand = new CameraDTO(serial, 123456789,"ESP", "987654321", "01", alias , new Date(), new Date(), "0", "11111");
 
         request = HttpRequest.PUT(BASE_PATH + "/cameras", updateCommand);
         response = client.toBlocking().exchange(request);  

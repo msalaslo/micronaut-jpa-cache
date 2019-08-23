@@ -51,4 +51,7 @@ public class CameraDTO extends BaseDTO implements Serializable {
 
     @Schema(description = "Number of VOSS devices", required = true)
 	public String vossServices;
+    
+    @Schema(description = "password", required = false)
+	public String password;
 }

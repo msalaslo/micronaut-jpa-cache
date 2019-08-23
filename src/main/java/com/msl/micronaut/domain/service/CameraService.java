@@ -15,6 +15,7 @@ public interface CameraService {
 	public CameraDTO insertInRepository(CameraDTO camera, String serial);
 	public CameraDTO updateInRepository(CameraDTO camera, String serial);
 	public void deleteById(String id);
+	public void deleteByIdInRepository(String id);
 	public void evictAllCacheValues();
 	public PageDTO<CameraDTO> findAll(int page, int pageSize);
 	public PageDTO<CameraDTO> findAllNoCache(int page, int pageSize);

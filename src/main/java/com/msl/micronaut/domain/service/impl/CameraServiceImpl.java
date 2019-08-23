@@ -200,7 +200,7 @@ public class CameraServiceImpl implements CameraService {
 		if(newCamera != null){
 			//Setting the values that are not exposed to the external APIs
 			cameraEntity.setPassword(newCamera.getPassword());
-			cameraEntity.setId(newCamera.getId());
+//			cameraEntity.setIdentificador(newCamera.getIdentificador());
 			log.info("updateInRepository, camera to insert {}:", cameraEntity );
 			Camera newCameraEntity = repository.save(cameraEntity);
 			return cameraConverter.toCameraDto(newCameraEntity);
@@ -221,6 +221,7 @@ public class CameraServiceImpl implements CameraService {
 	public void deleteByIdInRepository(String id) {
 		log.info("deleteById:" + id);
 		repository.deleteById(id);
+//		repository.deleteBySerial(id);
 	}
 
 
