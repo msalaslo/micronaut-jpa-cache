@@ -35,11 +35,11 @@ public class CameraController {
     protected CameraService cameraService;
 
     @Get("/{serial}") 
-    public CameraDTO findById(@PathVariable String serial) {
+    public CameraDTO findBySerial(String serial) {
 		log.info("Finding cameras by id (serial): {}", serial);
 
         return cameraService
-                .findById(serial)
+                .findBySerial(serial)
                 .orElse(null); 
     }
     
@@ -62,7 +62,7 @@ public class CameraController {
 			return HttpResponse.badRequest();
 		}
 	}
-
+	
     @Put("/{serial}") 
     public HttpResponse update(@Body @Valid CameraDTO camera, @PathVariable String serial) { 
 		log.info("Updating with serial: {}, camera {}", camera);
@@ -78,7 +78,7 @@ public class CameraController {
 	public HttpResponse<List<CameraDTO>> findAllCachedKeys(final Integer page, final Integer size, final String sort) {
 		log.info("Finding all cameras page: {} and size {}", page, size);
 		List<String> keys = cameraService.findAllKeys(page, size);
-		List<CameraDTO> cameras = keys.stream().map(cameraService::findById).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+		List<CameraDTO> cameras = keys.stream().map(cameraService::findBySerial).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 		return HttpResponse.ok(cameras);
 	}
 
@@ -86,7 +86,7 @@ public class CameraController {
     public HttpResponse<CameraDTO> save(@Body @Valid CameraDTO camera) {
 		log.info("Creating camera {}", camera);
 
-        cameraService.updateInRepository(camera,camera.getSerial());
+        cameraService.insertInRepository(camera,camera.getSerial());
         return HttpResponse
                 .created(camera)
                 .headers(headers -> headers.location(location(camera.getSerial())));
@@ -96,7 +96,9 @@ public class CameraController {
     public HttpResponse delete(@PathVariable String serial) {
 		log.info("Deleting camera by serial {}", serial);
 
-        cameraService.deleteById(serial);
+//        cameraService.deleteById(serial);
+		cameraService.deleteByIdInRepository(serial);
+        
         return HttpResponse.noContent();
     }
 

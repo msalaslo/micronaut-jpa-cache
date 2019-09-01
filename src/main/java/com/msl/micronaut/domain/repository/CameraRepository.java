@@ -19,23 +19,34 @@ import com.msl.micronaut.domain.entity.Camera;
  */
 @Singleton
 public interface CameraRepository {
-	Optional<Camera> findById(@NotNull String serial);
+	public Optional<Camera> findById(@NotNull String serial);
 
-	Camera save(@NotBlank String serial, @NotBlank String id, @NotBlank String countryCode,
+	public Camera save(@NotBlank String serial, @NotBlank int id, @NotBlank String countryCode,
 			@NotBlank String installationId, @NotBlank String zone, @NotBlank String password, @NotBlank String alias,
 			@NotBlank Date creationTime, @NotBlank Date lasUpdateTime, @NotBlank String vossServices);
 
-	void deleteById(@NotNull String serial);
+	public Camera save(@NotBlank Camera camera);
 
-	List<Camera> findAll(@NotNull SortingAndOrderArguments args);
+	public void deleteById(@NotNull String serial);
 
-	int update(@NotNull String serial, String id, String countryCode, String installationId, String zone,
+	public List<Camera> findAll(@NotNull SortingAndOrderArguments args);
+	
+	public List<String> findAllKeys(@NotNull SortingAndOrderArguments args);
+
+	public int update(@NotNull String serial, String id, String countryCode, String installationId, String zone,
 			String password, String alias, Date creationTime, Date lasUpdateTime, String vossServices);
 
-	Optional<Camera> findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId, String zone);
+	public Camera findBySerial(String serial);
 
-	List<Camera> findByCountryCodeAndInstallationId(String countryCode, String installationId);
+	public Camera findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId,
+			String zone);
 
-	List<Camera> findByCountryCodeAndInstallationIdAndZoneStartingWith(String countryCode, String installationId,
+	public List<Camera> findByCountryCodeAndInstallationId(String countryCode, String installationId);
+
+	public List<Camera> findByCountryCodeAndInstallationIdAndZoneStartingWith(String countryCode, String installationId,
 			String zoneStarting);
+	
+	public List<Camera> findByZoneStartingWith(String zoneStarting, @NotNull SortingAndOrderArguments args);
+	
+	public long count();
 }

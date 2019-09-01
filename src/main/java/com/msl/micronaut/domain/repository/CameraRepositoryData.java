@@ -2,8 +2,6 @@ package com.msl.micronaut.domain.repository;
 
 import java.util.List;
 
-import javax.inject.Singleton;
-
 import com.msl.micronaut.domain.entity.Camera;
 
 import io.micronaut.data.annotation.Repository;
@@ -18,9 +16,8 @@ import io.micronaut.data.repository.PageableRepository;
  * @author Miguel Salas
  */
 @Repository
-@Singleton
 public interface CameraRepositoryData extends PageableRepository<Camera, String>{
-//	public Optional<Camera> findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId, String zone);
+	public Camera findBySerial(String serial);
 	public Camera findByCountryCodeAndInstallationIdAndZone(String countryCode, String installationId, String zone);
 	public List<Camera> findByCountryCodeAndInstallationId(String countryCode, String installationId);
 	public Page<Camera> findByZoneStartingWith(String zoneStarting, Pageable pageable);

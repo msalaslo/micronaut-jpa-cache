@@ -29,7 +29,7 @@ public class CameraDTO extends BaseDTO implements Serializable {
 	public String serial;
 
     @Schema(description = "id autoincremental", required = true)
-	public String id;
+	public int id;
 
     @Schema(description = "Country code", required = true)
 	public String countryCode;
@@ -51,4 +51,7 @@ public class CameraDTO extends BaseDTO implements Serializable {
 
     @Schema(description = "Number of VOSS devices", required = true)
 	public String vossServices;
+    
+    @Schema(description = "password", required = false)
+	public String password;
 }
