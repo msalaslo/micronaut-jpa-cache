@@ -63,7 +63,7 @@ public class CameraController {
 		}
 	}
 
-    @Put 
+    @Put("/{serial}") 
     public HttpResponse update(@Body @Valid CameraDTO camera, @PathVariable String serial) { 
 		log.info("Updating with serial: {}, camera {}", camera);
 
