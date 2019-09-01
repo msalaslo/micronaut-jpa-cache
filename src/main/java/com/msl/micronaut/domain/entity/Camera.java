@@ -9,6 +9,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import io.micronaut.data.annotation.GeneratedValue;
+import io.micronaut.data.annotation.MappedProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class Camera implements Serializable{
 	
 	@GeneratedValue
 	@SequenceGenerator(sequenceName = "CAMERAPOC1_SEQ", allocationSize = 1, name = "CAMERAPOC1_SEQ") 
+	@MappedProperty("ID")
 	public int identificador;
 	
 //	@MappedProperty(value = "COUNTRY_CODE", definition = "COUNTRY_CODE")

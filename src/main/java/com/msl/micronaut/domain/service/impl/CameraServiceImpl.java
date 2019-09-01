@@ -190,7 +190,7 @@ public class CameraServiceImpl implements CameraService {
 	public void deleteById(String id) {
 		log.info("This method does not integrate with the database, deleteById:" + id);
 	}
-
+	
 //	@CachePut(key = "#id", value = "cameras-by-serial", cacheManager = "cacheManager", unless = "#result == null")
 	@CachePut(value = "cameras-by-serial")
 	public CameraDTO updateInRepository(CameraDTO camera, String serial) {

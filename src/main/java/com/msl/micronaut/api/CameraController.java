@@ -65,9 +65,10 @@ public class CameraController {
 	
     @Put("/{serial}") 
     public HttpResponse update(@Body @Valid CameraDTO camera, @PathVariable String serial) { 
-		log.info("Updating with serial: {}, camera {}", camera);
+		log.info("Updating ALIAS!! with serial: {}, camera {}", camera);
 
-        cameraService.update(camera, serial);
+//        cameraService.updateInRepository(camera, serial);
+		cameraService.update(camera, serial);
         return HttpResponse
                 .noContent()
                 .header(HttpHeaders.LOCATION, location(camera.getSerial()).getPath()); 
