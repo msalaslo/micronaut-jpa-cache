@@ -27,9 +27,9 @@ micronaut:
 datasources:
   default:
     type: com.zaxxer.hikari.HikariDataSource 
-    url: jdbc:oracle:thin:@es1prerac03-scan:1521/PROTMPRE_SRV.sp.securitasdirect.local
-    username: RS_SCORR
-    password: RS_SCORR
+    url: ${DATABASE_CONN}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     driver-class-name: oracle.jdbc.OracleDriver
     hikari:
       maximum-pool-size: 200
