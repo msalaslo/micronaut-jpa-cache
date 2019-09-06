@@ -9,7 +9,9 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import io.micronaut.data.annotation.GeneratedValue;
+import io.micronaut.data.annotation.MappedEntity;
 import io.micronaut.data.annotation.MappedProperty;
+import io.micronaut.data.model.naming.NamingStrategies;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "CAMERAPOC1")
-//@MappedEntity(namingStrategy = NamingStrategies.UnderScoreSeparatedUpperCase.class)
+@MappedEntity(namingStrategy = NamingStrategies.UnderScoreSeparatedUpperCase.class)
 public class Camera implements Serializable{
 
 	private static final long serialVersionUID = 1L;
