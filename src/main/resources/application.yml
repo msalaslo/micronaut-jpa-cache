@@ -27,9 +27,9 @@ micronaut:
 datasources:
   default:
     type: com.zaxxer.hikari.HikariDataSource 
-    url: ${DATABASE_CONN}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    url: ${database.url}
+    username: ${database.user}
+    password: ${database.password}
     driver-class-name: oracle.jdbc.OracleDriver
     hikari:
       maximum-pool-size: 200

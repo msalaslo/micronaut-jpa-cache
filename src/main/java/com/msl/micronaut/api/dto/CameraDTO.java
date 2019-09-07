@@ -3,12 +3,7 @@ package com.msl.micronaut.api.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import io.micronaut.core.annotation.Introspected;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Sample DTO object. <b>Please remove for actual project implementation.</b>
@@ -17,11 +12,24 @@ import lombok.NoArgsConstructor;
  * @author FaaS [faas@securitasdirect.es]
  *
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class CameraDTO extends BaseDTO implements Serializable {
+	
+	public CameraDTO() {
+		
+	}
+	
+	public CameraDTO(String serial, int id, String countryCode, String installationId, String zone, String alias, Date creationTime, Date lasUpdateTime, String vossServices, String password) {
+		this.setSerial(serial);
+		this.setId(id);
+		this.setCountryCode(countryCode);
+		this.setInstallationId(installationId);
+		this.setZone(zone);
+		this.setPassword(getPassword());
+		this.setAlias(alias);
+		this.setCreationTime(creationTime);
+		this.setLastUpdateTime(lastUpdateTime);
+		this.setVossServices(vossServices);
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -54,4 +62,84 @@ public class CameraDTO extends BaseDTO implements Serializable {
     
     @Schema(description = "password", required = false)
 	public String password;
+
+	public String getSerial() {
+		return serial;
+	}
+
+	public void setSerial(String serial) {
+		this.serial = serial;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getCountryCode() {
+		return countryCode;
+	}
+
+	public void setCountryCode(String countryCode) {
+		this.countryCode = countryCode;
+	}
+
+	public String getInstallationId() {
+		return installationId;
+	}
+
+	public void setInstallationId(String installationId) {
+		this.installationId = installationId;
+	}
+
+	public String getZone() {
+		return zone;
+	}
+
+	public void setZone(String zone) {
+		this.zone = zone;
+	}
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
+	public Date getCreationTime() {
+		return creationTime;
+	}
+
+	public void setCreationTime(Date creationTime) {
+		this.creationTime = creationTime;
+	}
+
+	public Date getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+
+	public void setLastUpdateTime(Date lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
+	}
+
+	public String getVossServices() {
+		return vossServices;
+	}
+
+	public void setVossServices(String vossServices) {
+		this.vossServices = vossServices;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 }
