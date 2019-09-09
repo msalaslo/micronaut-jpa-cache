@@ -22,6 +22,4 @@ public interface CameraRepositoryData extends PageableRepository<Camera, String>
 	public List<Camera> findByCountryCodeAndInstallationId(String countryCode, String installationId);
 	public Page<Camera> findByZoneStartingWith(String zoneStarting, Pageable pageable);
 	public List<Camera> findByCountryCodeAndInstallationIdAndZoneStartingWith(String countryCode, String installationId, String zoneStarting);
-//	@Query(value = "SELECT c.serial FROM Camera c")
-//	public List<String> findAllKeysWithPagination(Pageable pageable);
 }
