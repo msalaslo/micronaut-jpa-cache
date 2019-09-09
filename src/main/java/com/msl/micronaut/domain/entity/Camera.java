@@ -3,19 +3,17 @@ package com.msl.micronaut.domain.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import io.micronaut.data.annotation.GeneratedValue;
-import io.micronaut.data.annotation.MappedEntity;
-import io.micronaut.data.annotation.MappedProperty;
-import io.micronaut.data.model.naming.NamingStrategies;
 
 @Entity
 @Table(name = "CAMERAPOC")
-@MappedEntity(namingStrategy = NamingStrategies.UnderScoreSeparatedUpperCase.class)
+//@MappedEntity(namingStrategy = NamingStrategies.UnderScoreSeparatedUpperCase.class)
 public class Camera implements Serializable{
 	
 	public Camera() {
@@ -41,22 +39,27 @@ public class Camera implements Serializable{
 	
 	@GeneratedValue
 	@SequenceGenerator(sequenceName = "CAMERAPOC1_SEQ", allocationSize = 1, name = "CAMERAPOC1_SEQ") 
-	@MappedProperty("ID")
+	@Column(name = "ID")
 	@Id
 	public int id;
 	
-	@MappedProperty(value = "COUNTRY_CODE", definition = "COUNTRY_CODE")
+//	@MappedProperty(value = "COUNTRY_CODE", definition = "COUNTRY_CODE")
+	@Column(name = "COUNTRY_CODE")
 	public String countryCode;
 //	@MappedProperty("INSTALATION_ID")
+	@Column(name = "INSTALATION_ID")
 	public String installationId;
 	public String zone;
 	public String password;
 	public String alias;
 //	@MappedProperty("CREATION_TIME")
+	@Column(name = "CREATION_TIME")
 	public Date creationTime;
 //	@MappedProperty("LAST_UPDATE_TIME")
+	@Column(name = "LAST_UPDATE_TIME")
 	public Date lastUpdateTime;
 //	@MappedProperty("VOSS_SERVICES")
+	@Column(name = "VOSS_SERVICES")
 	public String vossServices;
 	public String getSerial() {
 		return serial;
